@@ -1,0 +1,405 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#6b4eff">
+<title>عجلة اختيار الطالبة</title>
+<style>
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;min-height:100%;font-family:Tahoma,Arial,sans-serif}
+body{
+  color:#20183a;
+  background:
+    radial-gradient(circle at 15% 10%, rgba(130,90,240,.18), transparent 30%),
+    radial-gradient(circle at 90% 10%, rgba(255,188,92,.14), transparent 22%),
+    linear-gradient(160deg,#f5f0ff,#fffaf4);
+}
+.app{max-width:760px;margin:auto;padding:16px 12px 28px}
+.top{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:14px}
+.brand{display:flex;align-items:center;gap:10px}
+.logo{
+  width:58px;height:58px;border-radius:18px;background:linear-gradient(145deg,#5b3ed0,#9b5ee7);
+  display:grid;place-items:center;color:#fff;font-size:30px;box-shadow:0 10px 25px rgba(79,51,181,.24)
+}
+h1{margin:0;font-size:28px;font-weight:900}
+.minirow{display:flex;gap:8px}
+.mini{
+  width:44px;height:44px;border-radius:14px;border:0;background:#fff;box-shadow:0 8px 20px rgba(52,34,97,.10);
+  font-size:20px
+}
+.card{
+  background:rgba(255,255,255,.92);border:1px solid rgba(255,255,255,.95);border-radius:30px;
+  box-shadow:0 22px 60px rgba(56,37,105,.13);padding:16px
+}
+.wheelBox{position:relative;aspect-ratio:1/1;width:min(100%,620px);margin:auto}
+#wheelSvg{width:100%;height:100%;display:block;filter:drop-shadow(0 16px 22px rgba(47,32,89,.18))}
+#wheelGroup{transform-origin:500px 500px;transform-box:view-box}
+.pointer{
+  position:absolute;right:-2px;top:50%;transform:translateY(-50%);z-index:5;
+  width:0;height:0;border-top:18px solid transparent;border-bottom:18px solid transparent;border-left:38px solid #241a48;
+  filter:drop-shadow(0 4px 5px rgba(0,0,0,.14))
+}
+.center{
+  position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:22%;aspect-ratio:1/1;z-index:6;
+  border-radius:50%;border:7px solid #271d4a;background:linear-gradient(145deg,#fff,#f4efff);
+  display:grid;place-items:center;text-align:center;font-weight:900;color:#4e36a8;font-size:clamp(13px,2.2vw,22px);
+  box-shadow:0 10px 24px rgba(45,31,92,.20)
+}
+.pills{display:flex;justify-content:center;gap:10px;flex-wrap:wrap;margin:10px 0 2px}
+.pill{
+  background:#fff;border:1px solid #e7e0f3;border-radius:999px;padding:9px 14px;font-size:13px;font-weight:700;color:#5c5375
+}
+.hero{
+  margin-top:14px;background:linear-gradient(135deg,#4f35b8,#9158df);color:#fff;border-radius:24px;padding:18px;
+  box-shadow:0 14px 34px rgba(74,47,169,.22)
+}
+.hero small{opacity:.82}.hero strong{display:block;font-size:24px;margin-top:5px}
+#spin{
+  width:100%;margin-top:12px;border:0;border-radius:20px;padding:17px;background:linear-gradient(135deg,#6848d8,#ab63e8);
+  color:#fff;font-size:23px;font-weight:900;box-shadow:0 14px 30px rgba(98,65,206,.28)
+}
+#spin:disabled{opacity:.5}
+.result{
+  margin-top:12px;background:#fff;border:1px solid #e7e0f4;border-radius:24px;padding:20px;text-align:center;
+  box-shadow:0 10px 26px rgba(58,39,110,.06)
+}
+.result small{color:#867f99;font-weight:700}
+#resultName{font-size:clamp(22px,5.2vw,34px);font-weight:900;line-height:1.55;margin-top:8px;color:#312363;min-height:56px}
+.row{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:12px}
+.secondary{
+  border:1px solid #e6def2;background:#fff;border-radius:16px;padding:12px;font-size:14px;font-weight:800;color:#4d3f72
+}
+.option{
+  margin-top:12px;padding:13px 14px;border:1px solid #e9e3f2;border-radius:17px;display:flex;align-items:center;justify-content:space-between;background:#fff
+}
+.option span{font-size:14px;font-weight:800}
+.switch{width:50px;height:28px;position:relative}
+.switch input{display:none}
+.slider{position:absolute;inset:0;background:#ddd5ea;border-radius:999px}
+.slider:before{
+  content:"";position:absolute;width:22px;height:22px;right:3px;top:3px;background:#fff;border-radius:50%;
+  box-shadow:0 2px 7px rgba(0,0,0,.15);transition:.2s
+}
+.switch input:checked + .slider{background:linear-gradient(90deg,#6948ca,#a25de5)}
+.switch input:checked + .slider:before{transform:translateX(-22px)}
+.historyBox{margin-top:14px;padding-top:12px;border-top:1px solid #ebe4f3}
+.hhead{display:flex;justify-content:space-between;font-size:13px;font-weight:800;color:#5a4b74}
+#history{display:flex;flex-wrap:wrap;gap:7px;margin-top:8px;max-height:120px;overflow:auto}
+.chip{background:#f1ebfc;color:#4d3988;border:1px solid #e3d8f8;border-radius:999px;padding:7px 10px;font-size:11px;font-weight:800}
+details{margin-top:13px;padding-top:12px;border-top:1px solid #ebe4f3}
+summary{font-size:14px;font-weight:800;color:#4a3c74}
+textarea{
+  width:100%;min-height:180px;margin-top:8px;border:1px solid #ded5ee;border-radius:14px;padding:10px;font-family:inherit;line-height:1.8
+}
+.modal{
+  position:fixed;inset:0;background:rgba(27,18,51,.48);backdrop-filter:blur(8px);display:none;align-items:center;justify-content:center;padding:18px;z-index:50
+}
+.modal.show{display:flex}
+.win{
+  width:min(540px,95vw);background:#fff;border-radius:30px;padding:30px 22px;text-align:center;box-shadow:0 28px 80px rgba(25,15,52,.32)
+}
+.win .star{font-size:58px}.win h2{margin:8px 0;color:#6846c9;font-size:18px}
+.winName{font-size:clamp(28px,7vw,40px);line-height:1.5;font-weight:900;margin:12px 0 22px;color:#261d4e}
+.win button{border:0;border-radius:16px;background:#2c234c;color:#fff;padding:13px 25px;font-weight:900;font-size:16px}
+.confetti{position:fixed;top:-20px;width:10px;height:16px;z-index:80;pointer-events:none;animation:fall linear forwards}
+@keyframes fall{to{transform:translate(var(--drift),110vh) rotate(720deg);opacity:.95}}
+@media (max-width:480px){
+  h1{font-size:24px}
+  .logo{width:52px;height:52px}
+  .center{border-width:6px}
+  .pointer{border-top-width:16px;border-bottom-width:16px;border-left-width:32px}
+}
+</style>
+</head>
+<body>
+<div class="app">
+  <div class="top">
+    <div class="brand">
+      <div class="logo">🎓</div>
+      <h1>عجلة اختيار الطالبة</h1>
+    </div>
+    <div class="minirow">
+      <button class="mini" id="soundBtn">🔊</button>
+      <button class="mini" id="fullBtn">⛶</button>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="wheelBox">
+      <svg id="wheelSvg" viewBox="0 0 1000 1000" role="img" aria-label="عجلة أسماء الطالبات">
+        <circle cx="500" cy="500" r="455" fill="#efeafb"></circle>
+        <g id="wheelGroup"><path d="M 500 500 L 925.62 438.80 A 430 430 0 0 1 925.62 561.20 Z" fill="#6E4DE9" stroke="#fff" stroke-width="3"></path><g transform="rotate(0.000 500 500)"><text x="760" y="500" transform="" text-anchor="middle" dominant-baseline="middle" fill="#fff" font-size="20" font-weight="800" style="font-family:Tahoma,Arial,sans-serif;paint-order:stroke;stroke:rgba(0,0,0,.14);stroke-width:1.3px">بخيته سالم</text></g>
+<path d="M 500 500 L 925.62 561.20 A 430 430 0 0 1 891.14 678.63 Z" fill="#8A5AF4" stroke="#fff" stroke-width="3"></path><g transform="rotate(16.364 500 500)"><text x="760" y="500" transform="" text-anchor="middle" dominant-baseline="middle" fill="#fff" font-size="20" font-weight="800" style="font-family:Tahoma,Arial,sans-serif;paint-order:stroke;stroke:rgba(0,0,0,.14);stroke-width:1.3px">حور حمود</text></g>
+<path d="M 500 500 L 891.14 678.63 A 430 430 0 0 1 824.97 781.59 Z" fill="#EC6EA8" stroke="#fff" stroke-width="3"></path><g transform="rotate(32.727 500 500)"><text x="760" y="500" transform="" text-anchor="middle" dominant-baseline="middle" fill="#fff" font-size="20" font-weight="800" style="font-family:Tahoma,Arial,sans-serif;paint-order:stroke;stroke:rgba(0,0,0,.14);stroke-width:1.3px">روان عبدالحافظ</text></g>
+<path d="M 500 500 L 824.97 781.59 A 430 430 0 0 1 732.48 861.74 Z" fill="#FF8B65" stroke="#fff" stroke-width="3"></path><g transform="rotate(49.091 500 500)"><text x="760" y="500" transform="" text-anchor="middle" dominant-baseline="middle" fill="#fff" font-size="20" font-weight="800" style="font-family:Tahoma,Arial,sans-serif;paint-order:stroke;stroke:rgba(0,0,0,.14);stroke-width:1.3px">زمله على</text></g>
+<path d="M 500 500 L 732.48 861.74 A 430 430 0 0 1 621.14 912.58 Z" fill="#F6B54C" stroke="#fff" stroke-width="3"></path><g transform="rotate(65.455 500 500)"><text x="760" y="500" transform="" text-anchor="middle" dominant-baseline="middle" fill="#fff" font-size="20" font-weight="800" style="font-family:Tahoma,Arial,sans-serif;paint-order:stroke;stroke:rgba(0,0,0,.14);stroke-width:1.3px">سارة عبدالرحمن</text></g>
+<path d="M 500 500 L 621.14 912.58 A 430 430 0 0 1 500.00 930.00 Z" fill="#E6C84F" stroke="#fff" stroke-width="3"></path><g transform="rotate(81.818 500 500)"><text x="760" y="500" transform="" text-anchor="middle" dominant-baseline="middle" fill="#fff" font-size="20" font-weight="800" style="font-family:Tahoma,Arial,sans-serif;paint-order:stroke;stroke:rgba(0,0,0,.14);stroke-width:1.3px">عائشة صالح</text></g>
+<path d="M 500 500 L 500.00 930.00 A 430 430 0 0 1 378.86 912.58 Z" fill="#9CCB64" stroke="#fff" stroke-width="3"></path><g transform="rotate(98.182 500 500)"><text x="760" y="500" transform="rotate(180 760 500)" text-anchor="middle" dominant-baseline="middle" fill="#fff" font-size="20" font-weight="800" style="font-family:Tahoma,Arial,sans-serif;paint-order:stroke;stroke:rgba(0,0,0,.14);stroke-width:1.3px">غدير ياسر</text></g>
+<path d="M 500 500 L 378.86 912.58 A 430 430 0 0 1 267.52 861.74 Z" fill="#56C590" stroke="#fff" stroke-width="3"></path><g transform="rotate(114.545 500 500)"><text x="760" y="500" transform="rotate(180 760 500)" text-anchor="middle" dominant-baseline="middle" fill="#fff" font-size="20" font-weight="800" style="font-family:Tahoma,Arial,sans-serif;paint-order:stroke;stroke:rgba(0,0,0,.14);stroke-width:1.3px">فاخره محمد</text></g>
+<path d="M 500 500 L 267.52 861.74 A 430 430 0 0 1 175.03 781.59 Z" fill="#45BBAF" stroke="#fff" stroke-width="3"></path><g transform="rotate(130.909 500 500)"><text x="760" y="500" transform="rotate(180 760 500)" text-anchor="middle" dominant-baseline="middle" fill="#fff" font-size="20" font-weight="800" style="font-family:Tahoma,Arial,sans-serif;paint-order:stroke;stroke:rgba(0,0,0,.14);stroke-width:1.3px">فاطمه محمد</text></g>
+<path d="M 500 500 L 175.03 781.59 A 430 430 0 0 1 108.86 678.63 Z" fill="#54AEE3" stroke="#fff" stroke-width="3"></path><g transform="rotate(147.273 500 500)"><text x="760" y="500" transform="rotate(180 760 500)" text-anchor="middle" dominant-baseline="middle" fill="#fff" font-size="20" font-weight="800" style="font-family:Tahoma,Arial,sans-serif;paint-order:stroke;stroke:rgba(0,0,0,.14);stroke-width:1.3px">لدمى طالب</text></g>
+<path d="M 500 500 L 108.86 678.63 A 430 430 0 0 1 74.38 561.20 Z" fill="#6684E6" stroke="#fff" stroke-width="3"></path><g transform="rotate(163.636 500 500)"><text x="760" y="500" transform="rotate(180 760 500)" text-anchor="middle" dominant-baseline="middle" fill="#fff" font-size="20" font-weight="800" style="font-family:Tahoma,Arial,sans-serif;paint-order:stroke;stroke:rgba(0,0,0,.14);stroke-width:1.3px">مبخوته صالح</text></g>
+<path d="M 500 500 L 74.38 561.20 A 430 430 0 0 1 74.38 438.80 Z" fill="#8A6BE8" stroke="#fff" stroke-width="3"></path><g transform="rotate(180.000 500 500)"><text x="760" y="500" transform="rotate(180 760 500)" text-anchor="middle" dominant-baseline="middle" fill="#fff" font-size="20" font-weight="800" style="font-family:Tahoma,Arial,sans-serif;paint-order:stroke;stroke:rgba(0,0,0,.14);stroke-width:1.3px">مريم مشعل</text></g>
+<path d="M 500 500 L 74.38 438.80 A 430 430 0 0 1 108.86 321.37 Z" fill="#6E4DE9" stroke="#fff" stroke-width="3"></path><g transform="rotate(196.364 500 500)"><text x="760" y="500" transform="rotate(180 760 500)" text-anchor="middle" dominant-baseline="middle" fill="#fff" font-size="20" font-weight="800" style="font-family:Tahoma,Arial,sans-serif;paint-order:stroke;stroke:rgba(0,0,0,.14);stroke-width:1.3px">مشاعل فالح</text></g>
+<path d="M 500 500 L 108.86 321.37 A 430 430 0 0 1 175.03 218.41 Z" fill="#8A5AF4" stroke="#fff" stroke-width="3"></path><g transform="rotate(212.727 500 500)"><text x="760" y="500" transform="rotate(180 760 500)" text-anchor="middle" dominant-baseline="middle" fill="#fff" font-size="20" font-weight="800" style="font-family:Tahoma,Arial,sans-serif;paint-order:stroke;stroke:rgba(0,0,0,.14);stroke-width:1.3px">مالك دحام</text></g>
+<path d="M 500 500 L 175.03 218.41 A 430 430 0 0 1 267.52 138.26 Z" fill="#EC6EA8" stroke="#fff" stroke-width="3"></path><g transform="rotate(229.091 500 500)"><text x="760" y="500" transform="rotate(180 760 500)" text-anchor="middle" dominant-baseline="middle" fill="#fff" font-size="20" font-weight="800" style="font-family:Tahoma,Arial,sans-serif;paint-order:stroke;stroke:rgba(0,0,0,.14);stroke-width:1.3px">مالك عبدالرحمن</text></g>
+<path d="M 500 500 L 267.52 138.26 A 430 430 0 0 1 378.86 87.42 Z" fill="#FF8B65" stroke="#fff" stroke-width="3"></path><g transform="rotate(245.455 500 500)"><text x="760" y="500" transform="rotate(180 760 500)" text-anchor="middle" dominant-baseline="middle" fill="#fff" font-size="20" font-weight="800" style="font-family:Tahoma,Arial,sans-serif;paint-order:stroke;stroke:rgba(0,0,0,.14);stroke-width:1.3px">ملوك محمود</text></g>
+<path d="M 500 500 L 378.86 87.42 A 430 430 0 0 1 500.00 70.00 Z" fill="#F6B54C" stroke="#fff" stroke-width="3"></path><g transform="rotate(261.818 500 500)"><text x="760" y="500" transform="rotate(180 760 500)" text-anchor="middle" dominant-baseline="middle" fill="#fff" font-size="20" font-weight="800" style="font-family:Tahoma,Arial,sans-serif;paint-order:stroke;stroke:rgba(0,0,0,.14);stroke-width:1.3px">مهره فرحان</text></g>
+<path d="M 500 500 L 500.00 70.00 A 430 430 0 0 1 621.14 87.42 Z" fill="#E6C84F" stroke="#fff" stroke-width="3"></path><g transform="rotate(278.182 500 500)"><text x="760" y="500" transform="" text-anchor="middle" dominant-baseline="middle" fill="#fff" font-size="20" font-weight="800" style="font-family:Tahoma,Arial,sans-serif;paint-order:stroke;stroke:rgba(0,0,0,.14);stroke-width:1.3px">نجود محمد</text></g>
+<path d="M 500 500 L 621.14 87.42 A 430 430 0 0 1 732.48 138.26 Z" fill="#9CCB64" stroke="#fff" stroke-width="3"></path><g transform="rotate(294.545 500 500)"><text x="760" y="500" transform="" text-anchor="middle" dominant-baseline="middle" fill="#fff" font-size="20" font-weight="800" style="font-family:Tahoma,Arial,sans-serif;paint-order:stroke;stroke:rgba(0,0,0,.14);stroke-width:1.3px">ندى وائل</text></g>
+<path d="M 500 500 L 732.48 138.26 A 430 430 0 0 1 824.97 218.41 Z" fill="#56C590" stroke="#fff" stroke-width="3"></path><g transform="rotate(310.909 500 500)"><text x="760" y="500" transform="" text-anchor="middle" dominant-baseline="middle" fill="#fff" font-size="20" font-weight="800" style="font-family:Tahoma,Arial,sans-serif;paint-order:stroke;stroke:rgba(0,0,0,.14);stroke-width:1.3px">نود مبارك</text></g>
+<path d="M 500 500 L 824.97 218.41 A 430 430 0 0 1 891.14 321.37 Z" fill="#45BBAF" stroke="#fff" stroke-width="3"></path><g transform="rotate(327.273 500 500)"><text x="760" y="500" transform="" text-anchor="middle" dominant-baseline="middle" fill="#fff" font-size="20" font-weight="800" style="font-family:Tahoma,Arial,sans-serif;paint-order:stroke;stroke:rgba(0,0,0,.14);stroke-width:1.3px">هند محمد</text></g>
+<path d="M 500 500 L 891.14 321.37 A 430 430 0 0 1 925.62 438.80 Z" fill="#54AEE3" stroke="#fff" stroke-width="3"></path><g transform="rotate(343.636 500 500)"><text x="760" y="500" transform="" text-anchor="middle" dominant-baseline="middle" fill="#fff" font-size="20" font-weight="800" style="font-family:Tahoma,Arial,sans-serif;paint-order:stroke;stroke:rgba(0,0,0,.14);stroke-width:1.3px">وسام عناد</text></g></g>
+        <circle cx="500" cy="500" r="435" fill="none" stroke="#2a204f" stroke-width="12"></circle>
+        <circle cx="500" cy="500" r="423" fill="none" stroke="rgba(255,255,255,.68)" stroke-width="3"></circle>
+      </svg>
+      <div class="pointer"></div>
+      <div class="center">اختيار<br>طالبة</div>
+    </div>
+
+    <div class="pills">
+      <div class="pill" id="remaining">22 طالبة متبقية</div>
+      <div class="pill">أسماء فقط</div>
+    </div>
+
+    <div class="hero">
+      <small>نشاط صفّي سريع</small>
+      <strong>✨ اختاري طالبة عشوائيًا</strong>
+    </div>
+
+    <button id="spin">🎡 تدوير العجلة</button>
+
+    <div class="result">
+      <small>الطالبة المختارة</small>
+      <div id="resultName">اضغطي زر التدوير</div>
+    </div>
+
+    <div class="row">
+      <button class="secondary" id="reset">↻ إعادة البداية</button>
+      <button class="secondary" id="copy">📋 نسخ الأسماء</button>
+    </div>
+
+    <div class="option">
+      <span>عدم تكرار الاسم بعد اختياره</span>
+      <label class="switch"><input id="noRepeat" type="checkbox" checked><span class="slider"></span></label>
+    </div>
+
+    <div class="historyBox">
+      <div class="hhead"><span>سجل الاختيارات</span><span id="hc">0</span></div>
+      <div id="history"><span style="font-size:11px;color:#8c849c">لم يتم اختيار أي اسم بعد</span></div>
+    </div>
+
+    <details>
+      <summary>تعديل الأسماء</summary>
+      <textarea id="box"></textarea>
+      <button class="secondary" id="update" style="width:100%;margin-top:8px">تحديث العجلة</button>
+    </details>
+  </div>
+</div>
+
+<div class="modal" id="modal">
+  <div class="win">
+    <div class="star">🌟</div>
+    <h2>تم اختيار الطالبة</h2>
+    <div class="winName" id="winName"></div>
+    <button id="closeModal">تم ✓</button>
+  </div>
+</div>
+
+<script>
+const originalNames = ["بخيته سالم بخيت الجربوعى المرى", "حور حمود جبر الحمادى الرويلى", "روان عبدالحافظ حسين محسن", "زمله على محمد جابر فاران", "سارة عبدالرحمن يوسف محمد يوسف", "عائشة صالح فهيد الحارثي", "غدير ياسر عبود الاحمد", "فاخره محمد ناصر المفقاعى الهاجرى", "فاطمه محمد مسعود سالم ابوشريده", "لدمى طالب عبدالله عريج المرى", "مبخوته صالح جابر فاران اليربوعى", "مريم مشعل حميد سطام الظاهر", "مشاعل فالح صالح الفريجى الرويلى", "مالك دحام محمد الفريجى الرويلى", "مالك عبدالرحمن جدعان طرجم الشمرى", "ملوك محمود محمد امبابى حمد", "مهره فرحان عبدالله شالش الزكروطى", "نجود محمد جابر بخيت اليربوعى", "ندى وائل صابر محمود محمد", "نود مبارك فالح الجربوعى المرى", "هند محمد ظافر ال حثيث الاحبابى", "وسام عناد الحمد"];
+const palette = ["#6E4DE9", "#8A5AF4", "#EC6EA8", "#FF8B65", "#F6B54C", "#E6C84F", "#9CCB64", "#56C590", "#45BBAF", "#54AEE3", "#6684E6", "#8A6BE8"];
+let names = [...originalNames];
+let historyList = [];
+let spinning = false;
+let soundOn = true;
+let currentRotation = 0;
+
+const group = document.getElementById('wheelGroup');
+const remaining = document.getElementById('remaining');
+const resultName = document.getElementById('resultName');
+const spinBtn = document.getElementById('spin');
+const historyEl = document.getElementById('history');
+const hc = document.getElementById('hc');
+const box = document.getElementById('box');
+const noRepeat = document.getElementById('noRepeat');
+const modal = document.getElementById('modal');
+const winName = document.getElementById('winName');
+box.value = originalNames.join('\n');
+
+function shortName(n){
+  const p = n.trim().split(/\s+/);
+  return p.slice(0,2).join(' ');
+}
+function esc(s){
+  return s.replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[m]));
+}
+function pt(r,a){
+  const x = 500 + r * Math.cos(a*Math.PI/180);
+  const y = 500 + r * Math.sin(a*Math.PI/180);
+  return [x,y];
+}
+function wedge(a0,a1){
+  const p0 = pt(430,a0), p1 = pt(430,a1);
+  const large = (((a1-a0)%360)>180)?1:0;
+  return `M 500 500 L ${p0[0].toFixed(2)} ${p0[1].toFixed(2)} A 430 430 0 ${large} 1 ${p1[0].toFixed(2)} ${p1[1].toFixed(2)} Z`;
+}
+function buildWheel(){
+  if(!names.length){
+    group.innerHTML = '<circle cx="500" cy="500" r="430" fill="#ebe7f1"></circle><text x="500" y="500" text-anchor="middle" dominant-baseline="middle" fill="#554e68" font-size="38" font-weight="900">تم اختيار جميع الطالبات</text>';
+    remaining.textContent='0 طالبة متبقية';
+    spinBtn.disabled = true;
+    return;
+  }
+  const arc = 360 / names.length;
+  group.innerHTML = names.map((name,i) => {
+    const mid = i * arc;
+    const a0 = mid - arc/2;
+    const a1 = mid + arc/2;
+    const flip = (mid%360 > 90 && mid%360 < 270) ? 180 : 0;
+    return `<path d="${wedge(a0,a1)}" fill="${palette[i%palette.length]}" stroke="#fff" stroke-width="3"></path>
+    <g transform="rotate(${mid} 500 500)">
+      <text x="760" y="500" transform="${flip ? 'rotate(180 760 500)' : ''}" text-anchor="middle" dominant-baseline="middle"
+       fill="#fff" font-size="20" font-weight="800"
+       style="font-family:Tahoma,Arial,sans-serif;paint-order:stroke;stroke:rgba(0,0,0,.14);stroke-width:1.3px">${esc(shortName(name))}</text>
+    </g>`;
+  }).join('');
+  remaining.textContent = `${names.length} طالبة متبقية`;
+  spinBtn.disabled = false;
+}
+function beep(freq=520,d=.05,v=.025){
+  if(!soundOn) return;
+  try{
+    const A = new(window.AudioContext||window.webkitAudioContext)();
+    const o = A.createOscillator(), g = A.createGain();
+    o.frequency.value = freq; g.gain.value = v; o.connect(g); g.connect(A.destination);
+    o.start(); o.stop(A.currentTime + d);
+  }catch(e){}
+}
+function confetti(){
+  const colors=['#6547D6','#A35DE5','#E861A8','#F1B64A','#45BFA8','#5C9DE1'];
+  for(let i=0;i<60;i++){
+    const e=document.createElement('i');
+    e.className='confetti';
+    e.style.left=(Math.random()*100)+'vw';
+    e.style.background=colors[Math.floor(Math.random()*colors.length)];
+    e.style.borderRadius=Math.random()>.5?'50%':'2px';
+    e.style.setProperty('--drift',(Math.random()*180-90)+'px');
+    e.style.animationDuration=(2.2+Math.random()*1.5)+'s';
+    e.style.animationDelay=(Math.random()*.25)+'s';
+    document.body.appendChild(e);
+    setTimeout(()=>e.remove(),4200);
+  }
+}
+function renderHistory(){
+  hc.textContent = historyList.length;
+  historyEl.innerHTML = historyList.length
+    ? historyList.map((n,i)=>`<span class="chip">${i+1}. ${esc(shortName(n))}</span>`).join('')
+    : '<span style="font-size:11px;color:#8c849c">لم يتم اختيار أي اسم بعد</span>';
+}
+function norm(d){ return ((d%360)+360)%360; }
+
+function spinWheel(){
+  if(spinning || !names.length) return;
+  spinning = true;
+  spinBtn.disabled = true;
+  resultName.textContent = 'تدور العجلة...';
+
+  const idx = Math.floor(Math.random() * names.length);
+  const arc = 360 / names.length;
+  const target = -idx * arc;
+  const delta = norm(target - currentRotation);
+  const turns = 7 + Math.floor(Math.random()*4);
+  currentRotation += turns*360 + delta;
+
+  group.style.transition = 'transform 4.5s cubic-bezier(.14,.74,.08,1)';
+  group.style.transform = `rotate(${currentRotation}deg)`;
+
+  const tick = setInterval(()=>beep(340,.018,.008),140);
+  setTimeout(()=>clearInterval(tick),3300);
+
+  setTimeout(()=>{
+    const chosen = names[idx];
+    resultName.textContent = chosen;
+    winName.textContent = chosen;
+    historyList.push(chosen);
+    renderHistory();
+    confetti();
+    beep(740,.08,.04); setTimeout(()=>beep(960,.08,.04),90);
+    modal.classList.add('show');
+
+    if(noRepeat.checked){
+      names.splice(idx,1);
+      setTimeout(()=>{
+        group.style.transition='none';
+        currentRotation = 0;
+        group.style.transform='rotate(0deg)';
+        buildWheel();
+      },350);
+    } else {
+      spinBtn.disabled = false;
+    }
+
+    spinning = false;
+    if(!noRepeat.checked) spinBtn.disabled = false;
+  }, 4600);
+}
+
+spinBtn.onclick = spinWheel;
+document.getElementById('closeModal').onclick = ()=>{ modal.classList.remove('show'); if(names.length) spinBtn.disabled=false; };
+modal.onclick = e=>{ if(e.target===modal){ modal.classList.remove('show'); if(names.length) spinBtn.disabled=false; } };
+
+document.getElementById('reset').onclick = ()=>{
+  names = [...originalNames];
+  historyList = [];
+  currentRotation = 0;
+  group.style.transition='none';
+  group.style.transform='rotate(0deg)';
+  resultName.textContent = 'اضغطي زر التدوير';
+  box.value = originalNames.join('\n');
+  renderHistory();
+  buildWheel();
+};
+
+document.getElementById('copy').onclick = async ()=>{
+  try{
+    await navigator.clipboard.writeText(box.value);
+    alert('تم نسخ الأسماء ✓');
+  }catch(e){
+    box.select();
+    document.execCommand('copy');
+    alert('تم نسخ الأسماء ✓');
+  }
+};
+
+document.getElementById('update').onclick = ()=>{
+  const x = box.value.split('\n').map(s=>s.trim()).filter(Boolean);
+  if(!x.length) return alert('أضيفي اسمًا واحدًا على الأقل');
+  names = x;
+  historyList = [];
+  currentRotation = 0;
+  group.style.transition='none';
+  group.style.transform='rotate(0deg)';
+  resultName.textContent = 'تم تحديث العجلة';
+  renderHistory();
+  buildWheel();
+};
+
+document.getElementById('soundBtn').onclick = e=>{
+  soundOn = !soundOn;
+  e.currentTarget.textContent = soundOn ? '🔊' : '🔇';
+};
+
+document.getElementById('fullBtn').onclick = async ()=>{
+  try{
+    if(!document.fullscreenElement) await document.documentElement.requestFullscreen();
+    else await document.exitFullscreen();
+  }catch(e){}
+};
+
+buildWheel();
+renderHistory();
+</script>
+</body>
+</html>
